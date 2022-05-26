@@ -1,14 +1,16 @@
 import os
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 class Process:
     """
     数据处理的过程，目前只对于csv格式的数据进行处理
     """
     def __init__(self,path):
         self.file = path
-        self.gram_list = []   ###n元祖列表
-        self.domain_dict = {}  ###统计字典中所有值的和
+        self.gram_list = []   ###alexa数据中的n元祖列表
+        self.domain_dict = {}  ###n元组字典的键值对
+        self.domain_num = 0   ###统计字典中所有值的总数，用以计算频率
 
 
     def load_file(self):
@@ -46,15 +48,34 @@ class Process:
                     self.domain_dict[self.gram_list[i][j]] = 1
                 else:
                     self.domain_dict[self.gram_list[i][j]] += 1
-        num_sum = sum(self.domain_dict.values())  ###统计字典中所有值的和
-        return num_sum
+        self.domain_num = sum(self.domain_dict.values())  ###统计字典中所有值的和
+
+    def plotfrehist(self):
+        """
+        绘制n元组的字典中频率图形
+        :return:
+        """
+        fre_dict = {}  ###将大数值转成频率后的字典
+        for ind,val in self.domain_dict.items():
+            if ind not in fre_dict:
+                fre_dict[ind] = self.domain_dict[ind] / (self.domain_num * 1.0)
+        sort_values_list = sorted(fre_dict.items(),key=lambda item:item[1],reverse=True)
+        x = np.arange(0,len(sort_values_list))
+        fig,ax = plt.subplots()
+        ax.plot(x,sort_values_list)
+        plt.show()
+
+
+
+
 
 
 if __name__=='__main__':
     A = Process('alexa.csv')
-    num = A.domain_process()
-    print(num)
+    A.domain_process()
     print(A.domain_dict)
+    print(len(A.domain_dict))
+    A.plotfrehist()
 
 
 
