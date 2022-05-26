@@ -61,8 +61,9 @@ class Process:
                 fre_dict[ind] = self.domain_dict[ind] / (self.domain_num * 1.0)
         sort_values_list = sorted(fre_dict.items(),key=lambda item:item[1],reverse=True)
         x = np.arange(0,len(sort_values_list))
+        list_values = [val for (ind,val) in sort_values_list]
         fig,ax = plt.subplots()
-        ax.plot(x,sort_values_list)
+        ax.plot(x,list_values)
         plt.show()
 
 
