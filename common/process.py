@@ -8,9 +8,10 @@ class Process:
     """
     def __init__(self,path):
         self.file = path
-        self.gram_list = []   ###alexa数据中的n元祖列表
+        self.gram_list = []   ###alexa数据中的n元祖列表 二维数组
         self.domain_dict = {}  ###n元组字典的键值对
-        self.domain_num = 0   ###统计字典中所有值的总数，用以计算频率
+        self.domain_num = 0   ###统计字典中所有值的总数，用以计算频率 二元组的长度为1415
+        self.len_url = 0   ###统计用于实验的网站的个数，构建onehot向量
 
 
     def load_file(self):
@@ -28,11 +29,11 @@ class Process:
         :return:
         """
         domain = self.load_file()
-        num_domain = len(domain)
+        self.len_url = len(domain)
         # gram_list = []
         try:
-            for i in range(num_domain):
-                domain_strip = ''.join(domain[i].split('.')[:-1])
+            for i in range(self.len_url):
+                domain_strip = ''.join(domain[i].split('.')[:-1]).lower()
                 temp = []
                 for j in range(len(domain_strip)-1):
                     temp.append(domain_strip[j:j+gram])
@@ -49,6 +50,15 @@ class Process:
                 else:
                     self.domain_dict[self.gram_list[i][j]] += 1
         self.domain_num = sum(self.domain_dict.values())  ###统计字典中所有值的和
+
+    def gram2onehot(self):
+        """
+        将n-gram数据转成onehot编码形式
+        :return: 返回onehot向量
+        """
+        gram_mat = np.zeros((self.len_url,self.domain_num))
+
+
 
     def plotfrehist(self):
         """
