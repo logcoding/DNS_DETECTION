@@ -14,6 +14,7 @@ class Process:
         self.len_url = 0   ###统计用于实验的网站的个数，构建onehot向量
 
 
+
     def load_file(self):
         if os.path.exists(os.path.join('..\dataset',self.file)):
             dataframe = pd.read_csv(os.path.join('..\dataset',self.file),index_col=0)
@@ -75,6 +76,7 @@ class Process:
         fig,ax = plt.subplots()
         ax.plot(x,list_values)
         plt.show()
+
 
 
 
