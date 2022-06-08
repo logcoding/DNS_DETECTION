@@ -1,7 +1,10 @@
 import os
+
+import gensim.models
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from gensim.models.word2vec import Word2Vec
 class Process:
     """
     数据处理的过程，目前只对于csv格式的数据进行处理
@@ -52,12 +55,16 @@ class Process:
                     self.domain_dict[self.gram_list[i][j]] += 1
         self.domain_num = sum(self.domain_dict.values())  ###统计字典中所有值的和
 
-    def gram2onehot(self):
+    def gram2vec(self):
         """
-        将n-gram数据转成onehot编码形式
-        :return: 返回onehot向量
+        将n-gram数据转成向量模式
+        :return: 返回n-gram词向量
         """
-        gram_mat = np.zeros((self.len_url,self.domain_num))
+        models = Word2Vec(vector_size=200, window=2, min_count=2, epochs=50)
+        models.build_vocab(self.gram_list)
+        models.train(self.gram_list, total_examples=models.corpus_count, epochs=models.epochs)
+        models.save('..\model\word2vec_model')
+
 
 
 
@@ -71,6 +78,7 @@ class Process:
             if ind not in fre_dict:
                 fre_dict[ind] = self.domain_dict[ind] / (self.domain_num * 1.0)
         sort_values_list = sorted(fre_dict.items(),key=lambda item:item[1],reverse=True)
+        print("sort_values_list:",sort_values_list)
         x = np.arange(0,len(sort_values_list))
         list_values = [val for (ind,val) in sort_values_list]
         fig,ax = plt.subplots()
@@ -84,11 +92,14 @@ class Process:
 
 
 if __name__=='__main__':
-    A = Process('alexa.csv')
-    A.domain_process(gram=2)
-    print(A.domain_dict)
-    print(len(A.domain_dict))
-    A.plotfrehist()
+    # A = Process('alexa.csv')
+    # A.domain_process()
+    # A.gram2vec()
+    model = gensim.models.Word2Vec.load('..\model\word2vec_model')
+    print(len(model.wv['go']))
+    # print(A.domain_dict)
+    # print(len(A.domain_dict))
+    # A.plotfrehist()
 
 
 
