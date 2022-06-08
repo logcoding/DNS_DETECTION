@@ -85,7 +85,7 @@ class Process:
 
 if __name__=='__main__':
     A = Process('alexa.csv')
-    A.domain_process()
+    A.domain_process(gram=2)
     print(A.domain_dict)
     print(len(A.domain_dict))
     A.plotfrehist()
