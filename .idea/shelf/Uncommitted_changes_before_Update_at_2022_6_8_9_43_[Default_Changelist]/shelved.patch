@@ -1,0 +1,71 @@
+Index: common/process.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import os\r\nimport pandas as pd\r\nimport numpy as np\r\nimport matplotlib.pyplot as plt\r\nclass Process:\r\n    \"\"\"\r\n    数据处理的过程，目前只对于csv格式的数据进行处理\r\n    \"\"\"\r\n    def __init__(self,path):\r\n        self.file = path\r\n        self.gram_list = []   ###alexa数据中的n元祖列表 二维数组\r\n        self.domain_dict = {}  ###n元组字典的键值对\r\n        self.domain_num = 0   ###统计字典中所有值的总数，用以计算频率 二元组的长度为1415\r\n        self.len_url = 0   ###统计用于实验的网站的个数，构建onehot向量\r\n\r\n\r\n    def load_file(self):\r\n        if os.path.exists(os.path.join('..\\dataset',self.file)):\r\n            dataframe = pd.read_csv(os.path.join('..\\dataset',self.file),index_col=0)\r\n            data = dataframe.values\r\n            return np.squeeze(data)\r\n        else:\r\n            print(\"file:{} does not exist\".format(os.path.join('..\\dataset',self.file)))\r\n\r\n    def domain_process(self,gram=2):\r\n        \"\"\"\r\n        对每个域名根据gram个数进行划分，默认按照2个划分\r\n        :param gram: 划分个数\r\n        :return:\r\n        \"\"\"\r\n        domain = self.load_file()\r\n        self.len_url = len(domain)\r\n        # gram_list = []\r\n        try:\r\n            for i in range(self.len_url):\r\n                domain_strip = ''.join(domain[i].split('.')[:-1]).lower()\r\n                temp = []\r\n                for j in range(len(domain_strip)-1):\r\n                    temp.append(domain_strip[j:j+gram])\r\n                self.gram_list.append(temp)\r\n        except Exception as e:\r\n            print('{}'.format(e))\r\n\r\n        # domain_dict = {}  ###统计各种n元组出现的次数字典\r\n        rows = len(self.gram_list)\r\n        for i in range(rows):\r\n            for j in range(len(self.gram_list[i])):\r\n                if self.gram_list[i][j] not in self.domain_dict:\r\n                    self.domain_dict[self.gram_list[i][j]] = 1\r\n                else:\r\n                    self.domain_dict[self.gram_list[i][j]] += 1\r\n        self.domain_num = sum(self.domain_dict.values())  ###统计字典中所有值的和\r\n\r\n    def gram2onehot(self):\r\n        \"\"\"\r\n        将n-gram数据转成onehot编码形式\r\n        :return: 返回onehot向量\r\n        \"\"\"\r\n        gram_mat = np.zeros((self.len_url,self.domain_num))\r\n\r\n\r\n\r\n    def plotfrehist(self):\r\n        \"\"\"\r\n        绘制n元组的字典中频率图形\r\n        :return:\r\n        \"\"\"\r\n        fre_dict = {}  ###将大数值转成频率后的字典\r\n        for ind,val in self.domain_dict.items():\r\n            if ind not in fre_dict:\r\n                fre_dict[ind] = self.domain_dict[ind] / (self.domain_num * 1.0)\r\n        sort_values_list = sorted(fre_dict.items(),key=lambda item:item[1],reverse=True)\r\n        x = np.arange(0,len(sort_values_list))\r\n        list_values = [val for (ind,val) in sort_values_list]\r\n        fig,ax = plt.subplots()\r\n        ax.plot(x,list_values)\r\n        plt.show()\r\n\r\n\r\n\r\n\r\n\r\n\r\nif __name__=='__main__':\r\n    A = Process('alexa.csv')\r\n    A.domain_process()\r\n    print(A.domain_dict)\r\n    print(len(A.domain_dict))\r\n    A.plotfrehist()\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- common/process.py	(revision 8d3ffeaf9ca13f006e7debf2b583a41348fb61a6)
++++ common/process.py	(date 1654594177119)
+@@ -83,7 +83,7 @@
+ 
+ if __name__=='__main__':
+     A = Process('alexa.csv')
+-    A.domain_process()
++    A.domain_process(gram=2)
+     print(A.domain_dict)
+     print(len(A.domain_dict))
+     A.plotfrehist()
+Index: readme
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>dataset:alexa中正常域名的网址数据，拿来作为原始数据\r\ncommon:针对DNS请求中的子域名进行语义分析，发掘一元词语、二元词语等满足的分布形式。\r\nmodel:1、Autoencoder编码的形式进行异常检测 2、其他分类算法\r\n\r\n深入揭秘Fast Flux僵尸网络:https://zhuanlan.zhihu.com/p/462791443\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- readme	(revision 8d3ffeaf9ca13f006e7debf2b583a41348fb61a6)
++++ readme	(date 1654594177144)
+@@ -3,3 +3,7 @@
+ model:1、Autoencoder编码的形式进行异常检测 2、其他分类算法
+ 
+ 深入揭秘Fast Flux僵尸网络:https://zhuanlan.zhihu.com/p/462791443
++
++采用工具有： Ozyman, TCP-over-DNS, Iodine, Dns2tcp, DNScat, 和 DeNiSe
++
++人类的语言一般来说都是遵循zipf分布的，隐蔽信道做法一般是压缩，加密，编码数据，让数据体现出随机的特征，增加熵
+\ No newline at end of file
+Index: .idea/DNS_DETECTION.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module type=\"PYTHON_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\">\r\n    <content url=\"file://$MODULE_DIR$\" />\r\n    <orderEntry type=\"jdk\" jdkName=\"Python 3.6 (frame)\" jdkType=\"Python SDK\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/DNS_DETECTION.iml	(revision 8d3ffeaf9ca13f006e7debf2b583a41348fb61a6)
++++ .idea/DNS_DETECTION.iml	(date 1654594231443)
+@@ -2,7 +2,7 @@
+ <module type="PYTHON_MODULE" version="4">
+   <component name="NewModuleRootManager">
+     <content url="file://$MODULE_DIR$" />
+-    <orderEntry type="jdk" jdkName="Python 3.6 (frame)" jdkType="Python SDK" />
++    <orderEntry type="jdk" jdkName="Python 3.6 (dnstest)" jdkType="Python SDK" />
+     <orderEntry type="sourceFolder" forTests="false" />
+   </component>
+ </module>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"Python 3.6 (frame)\" project-jdk-type=\"Python SDK\" />\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/misc.xml	(revision 8d3ffeaf9ca13f006e7debf2b583a41348fb61a6)
++++ .idea/misc.xml	(date 1654594231455)
+@@ -1,4 +1,4 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.6 (frame)" project-jdk-type="Python SDK" />
++  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.6 (dnstest)" project-jdk-type="Python SDK" />
+ </project>
+\ No newline at end of file
