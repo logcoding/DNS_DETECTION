@@ -85,6 +85,12 @@ class Process:
         ax.plot(x,list_values)
         plt.show()
 
+    def plotsumvec(self):
+        """
+        对网站的n-gram向量进行求和
+        """
+
+
 
 
 
@@ -92,11 +98,12 @@ class Process:
 
 
 if __name__=='__main__':
-    # A = Process('alexa.csv')
-    # A.domain_process()
+    A = Process('alexa.csv')
+    A.domain_process()
     # A.gram2vec()
     model = gensim.models.Word2Vec.load('..\model\word2vec_model')
-    print(len(model.wv['go']))
+    print(A.domain_dict['zl'])
+    print(model.wv[''])
     # print(A.domain_dict)
     # print(len(A.domain_dict))
     # A.plotfrehist()
