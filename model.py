@@ -12,13 +12,13 @@ class AnomalyDetector(Model):
     def __init__(self):
         super(AnomalyDetector,self).__init__()
         self.encoder = tf.keras.Sequential([
+            layers.Dense(64,activation='relu'),
             layers.Dense(32,activation='relu'),
-            layers.Dense(16,activation='relu'),
-            layers.Dense(8,activation='relu')
+            layers.Dense(16,activation='relu')
         ])
         self.decoder = tf.keras.Sequential([
-            layers.Dense(16,activation='relu'),
             layers.Dense(32,activation='relu'),
+            layers.Dense(64,activation='relu'),
             layers.Dense(128,activation='sigmoid')
         ])
 

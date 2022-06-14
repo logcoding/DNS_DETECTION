@@ -14,7 +14,8 @@
 import os
 # print(os.path.join('./dataset','alexa.csv'))
 import numpy as np
+x = []
+s = list(map(sum,zip(*x)))
+print(s)
 
-print(19831/9757330)
-print(1/(1+np.exp(-5)))
 
