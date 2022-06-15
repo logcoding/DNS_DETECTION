@@ -14,8 +14,22 @@
 import os
 # print(os.path.join('./dataset','alexa.csv'))
 import numpy as np
-x = []
-s = list(map(sum,zip(*x)))
-print(s)
+import matplotlib.pyplot as plt
+a = [1,2,3]
+b = np.array(a)
+print(b,b.shape)
+c = b[None,:]
+print(c,c.shape)
+
+
+data=np.random.randint(140,180,200)
+data = data[:,None]
+
+plt.hist(data, bins=10,
+         # histtype='step'
+         )
+
+plt.show()
+print(data.shape)
 
 

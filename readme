@@ -7,3 +7,5 @@ model:1、Autoencoder编码的形式进行异常检测 2、其他分类算法
 采用工具有： Ozyman, TCP-over-DNS, Iodine, Dns2tcp, DNScat, 和 DeNiSe
 
 人类的语言一般来说都是遵循zipf分布的，隐蔽信道做法一般是压缩，加密，编码数据，让数据体现出随机的特征，增加熵
+
+下载DNS开源地址： http://dx.doi.org/10.17632/zh3wnddzxy.1 来自文献：TDAE: Autoencoder-based Automatic Feature Learning Method for the Detection of DNS tunnel

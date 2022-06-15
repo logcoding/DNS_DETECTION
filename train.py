@@ -21,14 +21,32 @@ def train():
     autoencoder = AnomalyDetector()
     autoencoder.compile(optimizer='adam',loss='mae')
     history = autoencoder.fit(train_data,train_data,
-                              epochs=100,
-                              batch_size=512,
+                              epochs=5,
+                              batch_size=256,
                               validation_data=(test_data,test_data),
                               shuffle=True)
-    plt.plot(history.history['loss'],label='Train Loss')
-    plt.plot(history.history['val_loss'],label='Validation Loss')
-    plt.legend()
+    # plt.plot(history.history['loss'],label='Train Loss')
+    # plt.plot(history.history['val_loss'],label='Validation Loss')
+    # plt.legend()
+
+    # encoded_data = autoencoder.encoder(test_data).numpy()
+    # decoded_data = autoencoder.decoder(encoded_data).numpy()
+    # plt.plot(test_data[0],'b')
+    # plt.plot(decoded_data[0],'r')
+    # plt.fill_between(np.arange(128),decoded_data[0],test_data[0],color='lightcoral')
+    # plt.legend(labels=["Input","Reconstruction","Error"])
+    reconstructions = autoencoder.predict(train_data)
+    train_loss = tf.keras.losses.mae(reconstructions,train_data)
+    # print(tf.reduce_max(train_loss))
+    # print(tf.reduce_min(train_loss))
+    plt.hist(train_loss[None,:],bins=10)
+    plt.xlabel("Train loss")
+    plt.ylabel("No of examples")
+    threshold = np.mean(train_loss) + np.std(train_loss)
+    print("Threshold: ", threshold)
+
     plt.show()
+
 
 
 if __name__=='__main__':
