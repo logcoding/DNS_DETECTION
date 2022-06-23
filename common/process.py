@@ -5,8 +5,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from gensim.models.word2vec import Word2Vec
-from sklearn.model_selection import train_test_split
-import tensorflow as tf
+import dpkt
+from dpkt.compat import compat_ord
 class Process:
     """
     数据处理的过程，目前只对于csv格式的数据进行处理
@@ -114,6 +114,65 @@ class Process:
     #     if issubclass(x,list) and issubclass(y,list):
     #         return np.add(x,y).tolist()
 
+def parse(inputfile,outfile):
+    """
+    对pcap文件进行解析，提取域名信息
+    :param inputfile: 输入pcap文件名
+    :param outfile: 输出文件名
+    :return: 返回解析后的文件
+    """
+    # if not os.path.exists(".\dataset\{}".format(inputfile)):
+    #     assert "not exists {}".format(inputfile)
+    # if not os.path.exists(".\dataset\{}".format(outfile)):
+    #     assert "not exists {}".format(outfile)
+    with open(inputfile,'rb') as fin:
+        with open(outfile,'w') as fout:
+            pcap = dpkt.pcap.Reader(fin)
+            for ts,buf in pcap:
+                try:
+                    eth = dpkt.ethernet.Ethernet(buf)
+                    print("Ethernet Frame:",
+                          # mac_addr(eth.src),
+                          # mac_addr(eth.dst),
+                          # mac_addr(eth.type)
+                          )
+                    # print(eth.data.__class__)
+                    if not isinstance(eth.data,dpkt.ip.IP):
+                        print("Non IP Packet type not supported {}".format(eth.data.__class__.__name__))
+                        continue
+                    ip = eth.data
+                    # print(ip.data.__class__)
+                    if not isinstance(ip.data,dpkt.udp.UDP):
+                        print("Not UDP Packet type not supported {}".format(ip.data.__class__.__name__))
+                        continue
+                    udp = ip.data
+                    # print(udp.data.__class__,dpkt.dns.DNS.__class__)
+
+                    dns = dpkt.dns.DNS(udp.data)
+                    if dns.qr != dpkt.dns.DNS_Q:
+                        continue
+                    if dns.opcode != dpkt.dns.DNS_QUERY:
+                        continue
+                    fout.write(dns.qd[0].name + '\n')
+                except Exception as e:
+                    print(str(e))
+
+
+
+
+
+
+# def mac_addr(address):
+#     """Convert a MAC address to a readable/printable string
+#
+#        Args:
+#            address (str): a MAC address in hex form (e.g. '\x01\x02\x03\x04\x05\x06')
+#        Returns:
+#            str: Printable/readable MAC address
+#         dkpt官网
+#     """
+#     return ':'.join('%02x' % compat_ord(b) for b in address)
+
 
 
 
@@ -129,11 +188,12 @@ class Process:
 
 
 if __name__=='__main__':
-    A = Process('alexa.csv')
-    A.domain_process()
+    parse("..\dataset\iodine001.pcap","..\dataset\iodine")
+    # A = Process('alexa.csv')
+    # A.domain_process()
     # A.gram2vec()
     # model = gensim.models.Word2Vec.load('..\model\word2vec_model128')
-    A.sumvec()
+    # A.sumvec()
     # train_data,test_data = train_test_split(A.wordvec,test_size=0.2,shuffle=True
     # )
     # min_val = tf.reduce_min(train_data)

@@ -9,3 +9,13 @@ model:1、Autoencoder编码的形式进行异常检测 2、其他分类算法
 人类的语言一般来说都是遵循zipf分布的，隐蔽信道做法一般是压缩，加密，编码数据，让数据体现出随机的特征，增加熵
 
 下载DNS开源地址： http://dx.doi.org/10.17632/zh3wnddzxy.1 来自文献：TDAE: Autoencoder-based Automatic Feature Learning Method for the Detection of DNS tunnel
+
+iodine参数介绍：https://blog.csdn.net/qq_38154820/article/details/119929547?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-119929547-blog-124885174.pc_relevant_antiscanv2&spm=1001.2101.3001.4242.1&utm_relevant_index=3
+DNS参数介绍：https://blog.csdn.net/weixin_33877885/article/details/85800454?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165599201216782184640436%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=165599201216782184640436&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~baidu_landing_v2~default-1-85800454-null-null.142^v21^control,157^v15^new_3&utm_term=dns+type+OPT&spm=1018.2226.3001.4187
+
+
+
+iodine：
+sudo tcpdump -i eth0 port 53 -w iodine001.pcap  写文件到pcap
+iodined -f -c -P cwc1992214! 172.16.10.1 test.redcyber.top -DD  服务端
+sudo iodine -f -r -P cwc1992214! -I 0.01 -O Base64  test.redcyber.top -M200  客户端
