@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from gensim.models.word2vec import Word2Vec
 import dpkt
 from dpkt.compat import compat_ord
+# import tensorflow as tf
 class Process:
     """
     数据处理的过程，目前只对于csv格式的数据进行处理
@@ -22,12 +23,20 @@ class Process:
 
 
     def load_file(self):
-        if os.path.exists(os.path.join('..\dataset',self.file)):
-            dataframe = pd.read_csv(os.path.join('..\dataset',self.file),index_col=0)
-            data = dataframe.values
-            return np.squeeze(data)
+        print(os.path.join('E:\github\DNS_DETECTION\DNS_DETECTION\dataset',self.file))
+        if os.path.exists(os.path.join('E:\github\DNS_DETECTION\DNS_DETECTION\dataset',self.file)):
+            if os.path.join('E:\github\DNS_DETECTION\DNS_DETECTION\dataset',self.file).endswith('csv'):
+                dataframe = pd.read_csv(os.path.join('E:\github\DNS_DETECTION\DNS_DETECTION\dataset',self.file),index_col=0)
+                data = dataframe.values
+                return np.squeeze(data)
+            else:
+                with open(os.path.join('E:\github\DNS_DETECTION\DNS_DETECTION\dataset',self.file)) as fp:
+                    data = []
+                    for line in fp.readlines():
+                        data.append(line)
+                    return data
         else:
-            print("file:{} does not exist".format(os.path.join('..\dataset',self.file)))
+            print("file:{} does not exist".format(os.path.join('E:\github\DNS_DETECTION\DNS_DETECTION\dataset',self.file)))
 
     def domain_process(self,gram=2):
         """
@@ -66,7 +75,7 @@ class Process:
         models = Word2Vec(vector_size=size, window=2, min_count=2, epochs=50)
         models.build_vocab(self.gram_list)
         models.train(self.gram_list, total_examples=models.corpus_count, epochs=models.epochs)
-        models.save('..\model\word2vec_model' + '{}'.format(size))
+        models.save('E:\github\DNS_DETECTION\DNS_DETECTION\model\word2vec_model_' + '{}'.format(size))
 
 
 
@@ -88,12 +97,13 @@ class Process:
         ax.plot(x,list_values)
         plt.show()
 
-    def sumvec(self):
+    def sumvec(self,size=128,flag=False):
         """
         对网站的n-gram向量进行求和,便于后面进行训练
+        length:嵌入向量的长度大小
         """
 
-        model = gensim.models.Word2Vec.load('..\model\word2vec_model128')
+        model = gensim.models.Word2Vec.load('E:\github\DNS_DETECTION\DNS_DETECTION\model\word2vec_model_' + '{}'.format(size))
         try:
             for line in self.gram_list:
                 temp = [model.wv['{}'.format(gram)].tolist() for gram in line]
@@ -102,21 +112,13 @@ class Process:
         except Exception as e:
             print(e)
         self.wordvec = np.array(self.wordvec)
-        np.save('..\model\sumvec',self.wordvec)
+        if flag==True:
+            np.save('E:\github\DNS_DETECTION\DNS_DETECTION\model\sumvec' + '{}'.format(size),self.wordvec)
 
-    # def sum_(self,x,y):
-    #     """
-    #     自定义list相加，按照列进行
-    #     :param x:
-    #     :param y:
-    #     :return:
-    #     """
-    #     if issubclass(x,list) and issubclass(y,list):
-    #         return np.add(x,y).tolist()
 
 def parse(inputfile,outfile):
     """
-    对pcap文件进行解析，提取域名信息
+    对pcap文件进行解析，提取域名信息,一般用在测试数据中
     :param inputfile: 输入pcap文件名
     :param outfile: 输出文件名
     :return: 返回解析后的文件
@@ -131,11 +133,11 @@ def parse(inputfile,outfile):
             for ts,buf in pcap:
                 try:
                     eth = dpkt.ethernet.Ethernet(buf)
-                    print("Ethernet Frame:",
-                          # mac_addr(eth.src),
-                          # mac_addr(eth.dst),
-                          # mac_addr(eth.type)
-                          )
+                    # print("Ethernet Frame:",
+                    #       # mac_addr(eth.src),
+                    #       # mac_addr(eth.dst),
+                    #       # mac_addr(eth.type)
+                    #       )
                     # print(eth.data.__class__)
                     if not isinstance(eth.data,dpkt.ip.IP):
                         print("Non IP Packet type not supported {}".format(eth.data.__class__.__name__))
@@ -158,42 +160,13 @@ def parse(inputfile,outfile):
                     print(str(e))
 
 
-
-
-
-
-# def mac_addr(address):
-#     """Convert a MAC address to a readable/printable string
-#
-#        Args:
-#            address (str): a MAC address in hex form (e.g. '\x01\x02\x03\x04\x05\x06')
-#        Returns:
-#            str: Printable/readable MAC address
-#         dkpt官网
-#     """
-#     return ':'.join('%02x' % compat_ord(b) for b in address)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if __name__=='__main__':
-    parse("..\dataset\iodine001.pcap","..\dataset\iodine")
+    parse("..\dataset\iodine002.pcap","..\dataset\iodine002")
     # A = Process('alexa.csv')
     # A.domain_process()
     # A.gram2vec()
     # model = gensim.models.Word2Vec.load('..\model\word2vec_model128')
-    # A.sumvec()
+    # A.sumvec(128)
     # train_data,test_data = train_test_split(A.wordvec,test_size=0.2,shuffle=True
     # )
     # min_val = tf.reduce_min(train_data)
@@ -206,13 +179,6 @@ if __name__=='__main__':
     # plt.plot(np.arange(128),train_data[0])
     # plt.title("A Normal Domain")
     # plt.show()
-
-
-    # print(A.domain_dict['zl'])
-    # print(model.wv['zl'])
-    # print(A.domain_dict)
-    # print(len(A.domain_dict))
-    # A.plotfrehist()
 
 
 

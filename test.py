@@ -15,21 +15,14 @@ import os
 # print(os.path.join('./dataset','alexa.csv'))
 import numpy as np
 import matplotlib.pyplot as plt
-a = [1,2,3]
-b = np.array(a)
-print(b,b.shape)
-c = b[None,:]
-print(c,c.shape)
+from sklearn.metrics import accuracy_score,precision_score,recall_score
+label0 = np.array([True,True,True,True,False])
+label1 = np.array([True,True,True,True,True])
+
+print(accuracy_score(label0,label1))
+print(precision_score(label0,label1))
+print(recall_score(label0,label1))
 
 
-data=np.random.randint(140,180,200)
-data = data[:,None]
-
-plt.hist(data, bins=10,
-         # histtype='step'
-         )
-
-plt.show()
-print(data.shape)
 
 

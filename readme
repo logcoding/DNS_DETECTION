@@ -17,5 +17,15 @@ DNS参数介绍：https://blog.csdn.net/weixin_33877885/article/details/85800454
 
 iodine：
 sudo tcpdump -i eth0 port 53 -w iodine001.pcap  写文件到pcap
-iodined -f -c -P cwc1992214! 172.16.10.1 test.redcyber.top -DD  服务端
+iodined -f -c -P 1qaz!QAZ 172.16.10.1 test.redcyber.top -DD  服务端
 sudo iodine -f -r -P cwc1992214! -I 0.01 -O Base64  test.redcyber.top -M200  客户端
+
+iodine002.pcap
+sumvec128.npy
+MinMaxScaler: 0.03806351458325738 acc=100%
+StandardScaler:0.8120134053980915 acc=100%
+
+iodine.pcap
+sumvec128.npy
+MinMaxScaler: 0.03806351458325738 acc=100%
+StandardScaler:0.8120134053980915 acc=99.98%

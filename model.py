@@ -9,6 +9,9 @@ from tensorflow.keras import layers, losses
 from tensorflow.keras.datasets import fashion_mnist
 from tensorflow.keras.models import Model
 class AnomalyDetector(Model):
+    """
+    采用预训练好的词嵌入进行匹配，不加入embedding层
+    """
     def __init__(self):
         super(AnomalyDetector,self).__init__()
         self.encoder = tf.keras.Sequential([
